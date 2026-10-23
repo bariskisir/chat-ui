@@ -1,0 +1,78 @@
+:root
+{
+  --cui-background: oklch(0.97 0 89.876 / 1);
+  --cui-foreground: oklch(0.994 0 89.876 / 1);
+  --cui-popover-background: oklch(0.994 0 89.876 / 1);
+  --cui-sunk-light: oklch(0.097 0 0 / 0.02);
+  --cui-sunk: oklch(0.097 0 0 / 0.04);
+  --cui-sunk-deep: oklch(0.097 0 0 / 0.08);
+  --cui-elevated-light: oklch(0.097 0 0 / 0.04);
+  --cui-elevated: oklch(0.097 0 0 / 0.08);
+  --cui-elevated-strong: oklch(0.097 0 0 / 0.16);
+  --cui-highlight-subtle: oklch(0.097 0 0 / 0.02);
+  --cui-highlight: oklch(0.097 0 0 / 0.04);
+  --cui-highlight-strong: oklch(0.097 0 0 / 0.08);
+  --cui-highlight-intense: oklch(0.097 0 0 / 0.32);
+  --cui-inverted-background: oklch(0.097 0 0 / 1);
+  --cui-text-neutral-primary: oklch(0.097 0 0 / 1);
+  --cui-text-neutral-secondary: oklch(0.097 0 0 / 0.6);
+  --cui-text-neutral-tertiary: oklch(0.097 0 0 / 0.2);
+  --cui-text-brand: oklch(0.546 0.215 262.881 / 1);
+  --cui-text-white: oklch(1 0 89.876 / 1);
+  --cui-border-default: oklch(0.097 0 0 / 0.06);
+  --cui-border-interactive: oklch(0.097 0 0 / 0.12);
+  --cui-chat-user-response-bg: oklch(0.097 0 0 / 0.08);
+  --cui-chat-user-response-text: oklch(0.097 0 0 / 1);
+}
+
+:root[data-cui-theme="dark"],
+.theme-dark
+{
+  --cui-background: oklch(0.145 0 0 / 1);
+  --cui-foreground: oklch(0.205 0 0 / 1);
+  --cui-popover-background: oklch(0.205 0 0 / 1);
+  --cui-sunk-light: oklch(0.994 0 89.876 / 0.02);
+  --cui-sunk: oklch(0.994 0 89.876 / 0.04);
+  --cui-sunk-deep: oklch(0.994 0 89.876 / 0.08);
+  --cui-elevated-light: oklch(0.994 0 89.876 / 0.04);
+  --cui-elevated: oklch(0.994 0 89.876 / 0.08);
+  --cui-elevated-strong: oklch(0.994 0 89.876 / 0.16);
+  --cui-highlight-subtle: oklch(0.994 0 89.876 / 0.02);
+  --cui-highlight: oklch(0.994 0 89.876 / 0.04);
+  --cui-highlight-strong: oklch(0.994 0 89.876 / 0.08);
+  --cui-highlight-intense: oklch(0.994 0 89.876 / 0.32);
+  --cui-inverted-background: oklch(0.994 0 89.876 / 1);
+  --cui-text-neutral-primary: oklch(0.994 0 89.876 / 1);
+  --cui-text-neutral-secondary: oklch(0.994 0 89.876 / 0.6);
+  --cui-text-neutral-tertiary: oklch(0.994 0 89.876 / 0.2);
+  --cui-text-brand: oklch(0.546 0.215 262.881 / 1);
+  --cui-text-white: oklch(1 0 89.876 / 1);
+  --cui-border-default: oklch(0.994 0 89.876 / 0.06);
+  --cui-border-interactive: oklch(0.994 0 89.876 / 0.12);
+  --cui-chat-user-response-bg: oklch(0.994 0 89.876 / 0.12);
+  --cui-chat-user-response-text: oklch(0.994 0 89.876 / 1);
+}
+
+$sidebar-width: 272px;
+$sidebar-collapsed-width: 68px;
+$content-max-width: 768px;
+$content-inline-padding: 16px;
+
+$radius-s: 4px;
+$radius-m: 8px;
+$radius-l: 12px;
+$radius-xl: 16px;
+$radius-2xl: 20px;
+$radius-3xl: 24px;
+$radius-6xl: 28px;
+$radius-full: 9999px;
+
+$space-3xs: 2px;
+$space-2xs: 4px;
+$space-xs: 6px;
+$space-s: 8px;
+$space-m: 12px;
+$space-m-l: 14px;
+$space-l: 16px;
+$space-xl: 20px;
+$space-2xl: 24px;
