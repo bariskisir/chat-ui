@@ -3,8 +3,10 @@ import { ModelIdentifier } from '../../Core/Domain/Enums/ModelIdentifier';
 
 export interface IModelContextValue
 {
-  SelectedModel: ModelIdentifier;
+  SelectedModel: ModelIdentifier | null;
   Models: IModelDescriptor[];
-  CurrentDescriptor: IModelDescriptor;
+  CurrentDescriptor: IModelDescriptor | null;
+  IsLoading: boolean;
+  ErrorMessage: string | null;
   SelectModel(id: ModelIdentifier): void;
 }

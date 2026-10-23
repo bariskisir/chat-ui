@@ -1,7 +1,9 @@
 import { FC, useState, useEffect, useRef, useCallback } from 'react';
 import clsx from 'clsx';
+import { Trash2 } from 'lucide-react';
 import { ISessionListProps } from '../Definitions/ISessionListProps';
 import { UseChat } from '../../../Hooks/UseChat';
+import { IconButton } from '../../Common/Implementations/IconButton';
 import { SessionItem } from './SessionItem';
 
 export const SessionList: FC<ISessionListProps> = ({ className }) =>
@@ -11,7 +13,8 @@ export const SessionList: FC<ISessionListProps> = ({ className }) =>
     ActiveSession,
     SelectSession,
     DeleteSession,
-    RenameSession
+    RenameSession,
+    ClearAllSessions
   } = UseChat();
 
   const [scrollMasks, setScrollMasks] = useState({ top: false, bottom: false });
@@ -76,7 +79,18 @@ export const SessionList: FC<ISessionListProps> = ({ className }) =>
       )}
     >
       <div className="cui-agent-thread-list-content">
-        <div className="cui-agent-thread-list-group">Threads</div>
+        <div className="cui-agent-thread-list-group">
+          <span className="cui-agent-thread-list-group-label">Threads</span>
+          <IconButton
+            size="small"
+            onClick={ClearAllSessions}
+            title="Clear all threads"
+            ariaLabel="Clear all threads"
+            className="cui-agent-thread-list-clear"
+          >
+            <Trash2 size={13} strokeWidth={2} />
+          </IconButton>
+        </div>
         {Sessions.map((session) => (
           <SessionItem
             key={session.Id}

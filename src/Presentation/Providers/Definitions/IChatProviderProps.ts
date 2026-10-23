@@ -5,6 +5,6 @@ import { IConversationRepository } from '../../../Application/Contracts/IConvers
 export interface IChatProviderProps
 {
   children: ReactNode;
-  chatService?: IChatService;
+  chatService: IChatService;
   repository?: IConversationRepository;
 }

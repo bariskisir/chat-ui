@@ -4,10 +4,14 @@ import { ChatContext } from '../../Contexts/ChatContext';
 import { IChatContextValue } from '../../Contracts/IChatContextValue';
 import { IConversationSession } from '../../../Core/Domain/Entities/Definitions/IConversationSession';
 import { ConversationSession } from '../../../Core/Domain/Entities/Implementations/ConversationSession';
+import { IChatAttachment } from '../../../Core/Domain/Entities/Definitions/IChatAttachment';
 import { IChatMessage } from '../../../Core/Domain/Entities/Definitions/IChatMessage';
 import { ChatMessage } from '../../../Core/Domain/Entities/Implementations/ChatMessage';
 import { ChatStatus } from '../../../Core/Domain/Enums/ChatStatus';
-import { MockChatService } from '../../../Infrastructure/Services/MockChatService';
+import { ChatSearchStatus } from '../../../Core/Domain/Enums/ChatSearchStatus';
+import { ReasoningEffort } from '../../../Core/Domain/Enums/ReasoningEffort';
+import { ServiceProviderType } from '../../../Core/Domain/Enums/ServiceProviderType';
+import { WebSearchMode } from '../../../Core/Domain/Enums/WebSearchMode';
 import { BrowserConversationRepository } from '../../../Infrastructure/Repositories/BrowserConversationRepository';
 import { BrowserStorageService } from '../../../Infrastructure/Services/BrowserStorageService';
 import { ChatRequestDto } from '../../../Application/DTOs/ChatRequestDto';
@@ -20,12 +24,7 @@ export const ChatProvider: FC<IChatProviderProps> = ({
   repository
 }) =>
 {
-  const { SelectedModel } = UseModel();
-
-  const service = useMemo(() =>
-  {
-    return chatService || new MockChatService();
-  }, [chatService]);
+  const { SelectedModel, CurrentDescriptor } = UseModel();
 
   const repo = useMemo(() =>
   {
@@ -35,13 +34,44 @@ export const ChatProvider: FC<IChatProviderProps> = ({
   const [sessions, setSessions] = useState<IConversationSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [status, setStatus] = useState<ChatStatus>(ChatStatus.Idle);
+  const [reasoningEffort, setReasoningEffortState] = useState<ReasoningEffort>('default');
+  const [webSearchMode, setWebSearchModeState] = useState<WebSearchMode>('off');
   const abortControllerRef = useRef<AbortController | null>(null);
+  const discardedSessionIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() =>
   {
     const loaded = repo.GetAllSessions();
     setSessions(loaded);
   }, [repo]);
+
+  const isOpenCodeModel = CurrentDescriptor?.Provider === ServiceProviderType.OpenCode;
+  const canUseReasoning = isOpenCodeModel
+    && Boolean(CurrentDescriptor?.ReasoningEfforts.length);
+  const canUseWebSearch = isOpenCodeModel;
+
+  useEffect(() =>
+  {
+    const efforts = CurrentDescriptor?.ReasoningEfforts ?? [];
+    if (efforts.length === 0 && reasoningEffort !== 'default')
+    {
+      setReasoningEffortState('default');
+      return;
+    }
+
+    if (efforts.length > 0 && !efforts.includes(reasoningEffort))
+    {
+      setReasoningEffortState(efforts[0] ?? 'default');
+    }
+  }, [CurrentDescriptor, reasoningEffort]);
+
+  useEffect(() =>
+  {
+    if (!canUseWebSearch && webSearchMode !== 'off')
+    {
+      setWebSearchModeState('off');
+    }
+  }, [canUseWebSearch, webSearchMode]);
 
   const activeSession = useMemo(() =>
   {
@@ -81,6 +111,13 @@ export const ChatProvider: FC<IChatProviderProps> = ({
 
   const deleteSession = useCallback((id: string) =>
   {
+    discardedSessionIdsRef.current.add(id);
+
+    if (activeSessionId === id)
+    {
+      stopGenerating();
+    }
+
     repo.DeleteSession(id);
     setSessions((prev) =>
     {
@@ -96,7 +133,7 @@ export const ChatProvider: FC<IChatProviderProps> = ({
       }
       return current;
     });
-  }, [repo]);
+  }, [activeSessionId, repo, stopGenerating]);
 
   const renameSession = useCallback((id: string, newTitle: string) =>
   {
@@ -114,18 +151,58 @@ export const ChatProvider: FC<IChatProviderProps> = ({
     });
   }, [repo]);
 
+  const clearCurrentSession = useCallback(() =>
+  {
+    if (!activeSessionId)
+    {
+      return;
+    }
+
+    discardedSessionIdsRef.current.add(activeSessionId);
+    stopGenerating();
+    repo.DeleteSession(activeSessionId);
+    setSessions((prev) => prev.filter((s) => s.Id !== activeSessionId));
+    setActiveSessionId(null);
+  }, [activeSessionId, stopGenerating, repo]);
+
   const clearAllSessions = useCallback(() =>
   {
+    sessions.forEach((session) => discardedSessionIdsRef.current.add(session.Id));
     stopGenerating();
     repo.ClearAllSessions();
     setSessions([]);
     setActiveSessionId(null);
-  }, [stopGenerating, repo]);
+  }, [sessions, stopGenerating, repo]);
 
-  const sendMessage = useCallback(async (prompt: string) =>
+  const setReasoningEffort = useCallback((effort: ReasoningEffort) =>
+  {
+    const available = CurrentDescriptor?.ReasoningEfforts ?? [];
+    if (available.length === 0 || !available.includes(effort))
+    {
+      return;
+    }
+
+    setReasoningEffortState(effort);
+  }, [CurrentDescriptor]);
+
+  const setWebSearchMode = useCallback((mode: WebSearchMode) =>
+  {
+    if (!canUseWebSearch)
+    {
+      setWebSearchModeState('off');
+      return;
+    }
+
+    setWebSearchModeState(mode);
+  }, [canUseWebSearch]);
+
+  const sendMessage = useCallback(async (
+    prompt: string,
+    attachments: IChatAttachment[] = []
+  ) =>
   {
     const cleanPrompt = prompt.trim();
-    if (!cleanPrompt || status === ChatStatus.Streaming)
+    if (!SelectedModel || !CurrentDescriptor || !cleanPrompt || status === ChatStatus.Streaming)
     {
       return;
     }
@@ -140,8 +217,9 @@ export const ChatProvider: FC<IChatProviderProps> = ({
       isBrandNewSession = true;
     }
 
-    const userMsg = ChatMessage.CreateUserMessage(cleanPrompt, SelectedModel);
+    const userMsg = ChatMessage.CreateUserMessage(cleanPrompt, SelectedModel, attachments);
     targetSession.AddMessage(userMsg);
+    const requestHistory = [...targetSession.Messages];
 
     const assistantMsg = ChatMessage.CreateAssistantMessage(SelectedModel, '');
     targetSession.AddMessage(assistantMsg);
@@ -164,32 +242,98 @@ export const ChatProvider: FC<IChatProviderProps> = ({
 
     const request = new ChatRequestDto(
       cleanPrompt,
-      targetSession.Messages,
+      requestHistory,
       SelectedModel,
-      abortController.signal
+      CurrentDescriptor.Provider,
+      targetSession.Id,
+      abortController.signal,
+      reasoningEffort,
+      webSearchMode
     );
+
+    const isDiscarded = () => discardedSessionIdsRef.current.has(targetSession!.Id);
+
+    const finalizeSearch = () =>
+    {
+      if (assistantMsg.Search?.Status === ChatSearchStatus.Searching)
+      {
+        assistantMsg.ApplySearchState({
+          ...assistantMsg.Search,
+          Status: ChatSearchStatus.Failed
+        });
+        setSessions((prev) => [...prev]);
+      }
+    };
 
     const callbacks = new StreamCallbacksDto(
       (chunk: string) =>
       {
+        if (isDiscarded())
+        {
+          return;
+        }
+
         assistantMsg.AppendContent(chunk);
         setSessions((prev) => [...prev]);
       },
       () =>
       {
-        repo.SaveSession(targetSession!);
+        finalizeSearch();
+
+        if (!isDiscarded())
+        {
+          repo.SaveSession(targetSession!);
+        }
+
         setStatus(ChatStatus.Idle);
         abortControllerRef.current = null;
       },
-      () =>
+      (error: Error) =>
       {
-        setStatus(ChatStatus.Error);
+        finalizeSearch();
+
+        if (!isDiscarded())
+        {
+          assistantMsg.ApplyError(error.message);
+          repo.SaveSession(targetSession!);
+        }
+
+        setStatus(isDiscarded() ? ChatStatus.Idle : ChatStatus.Error);
         abortControllerRef.current = null;
+      },
+      (chunk: string) =>
+      {
+        if (isDiscarded())
+        {
+          return;
+        }
+
+        assistantMsg.AppendReasoning(chunk);
+        setSessions((prev) => [...prev]);
+      },
+      (search) =>
+      {
+        if (isDiscarded())
+        {
+          return;
+        }
+
+        assistantMsg.ApplySearchState(search);
+        setSessions((prev) => [...prev]);
       }
     );
 
-    await service.StreamMessageAsync(request, callbacks);
-  }, [activeSession, status, SelectedModel, repo, service]);
+    await chatService.StreamMessageAsync(request, callbacks);
+  }, [
+    activeSession,
+    status,
+    SelectedModel,
+    CurrentDescriptor,
+    reasoningEffort,
+    webSearchMode,
+    repo,
+    chatService
+  ]);
 
   const isGenerating = status === ChatStatus.Streaming;
 
@@ -201,13 +345,20 @@ export const ChatProvider: FC<IChatProviderProps> = ({
       Messages: messages,
       Status: status,
       IsGenerating: isGenerating,
+      ReasoningEffort: reasoningEffort,
+      WebSearchMode: webSearchMode,
+      CanUseReasoning: canUseReasoning,
+      CanUseWebSearch: canUseWebSearch,
       SendMessage: sendMessage,
       StopGenerating: stopGenerating,
       CreateNewSession: createNewSession,
       SelectSession: selectSession,
       DeleteSession: deleteSession,
+      ClearCurrentSession: clearCurrentSession,
       RenameSession: renameSession,
-      ClearAllSessions: clearAllSessions
+      ClearAllSessions: clearAllSessions,
+      SetReasoningEffort: setReasoningEffort,
+      SetWebSearchMode: setWebSearchMode
     };
   }, [
     sessions,
@@ -215,13 +366,20 @@ export const ChatProvider: FC<IChatProviderProps> = ({
     messages,
     status,
     isGenerating,
+    reasoningEffort,
+    webSearchMode,
+    canUseReasoning,
+    canUseWebSearch,
     sendMessage,
     stopGenerating,
     createNewSession,
     selectSession,
     deleteSession,
+    clearCurrentSession,
     renameSession,
-    clearAllSessions
+    clearAllSessions,
+    setReasoningEffort,
+    setWebSearchMode
   ]);
 
   return (

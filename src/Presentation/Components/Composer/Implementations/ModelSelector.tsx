@@ -1,13 +1,23 @@
 import { FC, useState, useRef, useEffect } from 'react';
 import clsx from 'clsx';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { IModelSelectorProps } from '../Definitions/IModelSelectorProps';
 import { UseModel } from '../../../Hooks/UseModel';
 import { ModelIdentifier } from '../../../../Core/Domain/Enums/ModelIdentifier';
+import { ServiceProviderType } from '../../../../Core/Domain/Enums/ServiceProviderType';
+
+const ProviderLabels: Record<ServiceProviderType, string> =
+{
+  [ServiceProviderType.Mock]: 'Mock',
+  [ServiceProviderType.OpenCode]: 'OpenCode',
+  [ServiceProviderType.OpenAI]: 'OpenAI',
+  [ServiceProviderType.Anthropic]: 'Anthropic',
+  [ServiceProviderType.Custom]: 'Custom'
+};
 
 export const ModelSelector: FC<IModelSelectorProps> = ({ className }) =>
 {
-  const { SelectedModel, Models, CurrentDescriptor, SelectModel } = UseModel();
+  const { SelectedModel, Models, CurrentDescriptor, IsLoading, ErrorMessage, SelectModel } = UseModel();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -37,6 +47,10 @@ export const ModelSelector: FC<IModelSelectorProps> = ({ className }) =>
     setIsOpen(false);
   };
 
+  const isUnavailable = CurrentDescriptor === null;
+  const badgeText = CurrentDescriptor?.Name
+    ?? (IsLoading ? 'Loading models...' : ErrorMessage ? 'Models unavailable' : 'No models available');
+
   return (
     <div className={clsx('cui-model-selector-container', className)} ref={containerRef} style={{ position: 'relative' }}>
       <button
@@ -45,13 +59,17 @@ export const ModelSelector: FC<IModelSelectorProps> = ({ className }) =>
         className="cui-model-badge"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
+        disabled={isUnavailable}
+        title={ErrorMessage ?? undefined}
       >
-        <span>{CurrentDescriptor.Name}</span>
-        <span className="cui-model-badge__tag">{CurrentDescriptor.Badge}</span>
+        <span>{badgeText}</span>
+        {CurrentDescriptor && (
+          <span className="cui-model-badge__tag">{CurrentDescriptor.Badge}</span>
+        )}
         <ChevronDown size={13} strokeWidth={2.2} />
       </button>
 
-      {isOpen && (
+      {isOpen && Models.length > 0 && (
         <div className="cui-model-dropdown" role="listbox">
           {Models.map((m) =>
           {
@@ -69,13 +87,14 @@ export const ModelSelector: FC<IModelSelectorProps> = ({ className }) =>
                 )}
               >
                 <div className="cui-model-dropdown__item-name">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>{m.Name}</span>
-                    <span className="cui-model-badge__tag">{m.Badge}</span>
-                  </div>
-                  <span className="cui-model-dropdown__item-desc">{m.Tagline}</span>
+                  <span className="cui-model-dropdown__item-text">
+                    <span className="cui-model-dropdown__item-label">{m.Name}</span>
+                    <small className="cui-model-dropdown__item-provider">
+                      {ProviderLabels[m.Provider]}
+                    </small>
+                  </span>
+                  <span className="cui-model-badge__tag">{m.Badge}</span>
                 </div>
-                {isSelected && <Check size={14} strokeWidth={2.5} />}
               </button>
             );
           })}

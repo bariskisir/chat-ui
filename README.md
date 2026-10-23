@@ -5,7 +5,7 @@
 <h1 align="center">Chat UI</h1>
 
 <p align="center">
-  A modern, responsive chat interface built with React.
+  A full-stack Next.js chat interface for Mock and free OpenCode models.
 </p>
 
 <p align="center">

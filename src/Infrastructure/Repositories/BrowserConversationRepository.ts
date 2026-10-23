@@ -27,7 +27,18 @@ export class BrowserConversationRepository implements IConversationRepository
       .map((dto) =>
       {
         const messages = (dto.Messages || []).map((m) =>
-          new ChatMessage(m.Id, m.Role, m.Content, m.CreatedAt, m.Model)
+          new ChatMessage(
+            m.Id,
+            m.Role,
+            m.Content,
+            m.CreatedAt,
+            m.Model,
+            m.Attachments ?? [],
+            m.Reasoning ?? '',
+            m.ReasoningStartedAt,
+            m.Search,
+            m.Error
+          )
         );
         return new ConversationSession(
           dto.Id,

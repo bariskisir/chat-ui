@@ -1,0 +1,78 @@
+.cui-attachment-chip
+{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 240px;
+  height: 28px;
+  padding: 0 4px 0 8px;
+  border-radius: 8px;
+  background-color: var(--cui-sunk);
+  color: var(--cui-text-neutral-primary);
+  font-size: 12px;
+  line-height: 1;
+
+  &__icon
+  {
+    flex-shrink: 0;
+    color: var(--cui-text-neutral-secondary);
+  }
+
+  &__name
+  {
+    min-width: 0;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__size
+  {
+    flex-shrink: 0;
+    color: var(--cui-text-neutral-secondary);
+    font-size: 11px;
+  }
+
+  &__remove
+  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    color: var(--cui-text-neutral-secondary);
+    transition: background-color 110ms ease, color 110ms ease;
+
+    &:hover
+    {
+      background-color: var(--cui-highlight-strong);
+      color: var(--cui-text-neutral-primary);
+    }
+  }
+
+  &--inverted
+  {
+    background-color: color-mix(in oklch, var(--cui-foreground) 16%, transparent);
+    color: var(--cui-foreground);
+
+    .cui-attachment-chip__icon,
+    .cui-attachment-chip__size
+    {
+      color: color-mix(in oklch, var(--cui-foreground) 70%, transparent);
+    }
+
+    .cui-attachment-chip__remove
+    {
+      color: color-mix(in oklch, var(--cui-foreground) 70%, transparent);
+
+      &:hover
+      {
+        background-color: color-mix(in oklch, var(--cui-foreground) 20%, transparent);
+        color: var(--cui-foreground);
+      }
+    }
+  }
+}

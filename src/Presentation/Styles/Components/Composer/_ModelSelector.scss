@@ -18,9 +18,23 @@
   cursor: pointer;
   transition: background-color 90ms ease;
 
-  &:hover
+  &:not(:disabled):hover
   {
     background-color: var(--cui-highlight-strong);
+  }
+
+  &:disabled
+  {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  > span:first-child
+  {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__tag
@@ -37,37 +51,81 @@
 .cui-model-dropdown
 {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 8px);
   left: 0;
-  width: 260px;
+  width: min(300px, calc(100vw - 32px));
+  max-height: min(420px, 60vh);
+  padding: 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background-color: var(--cui-popover-background);
   border: 1px solid var(--cui-border-default);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px -4px oklch(0 0 0 / 0.12);
-  padding: 6px;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--cui-text-neutral-primary) 3%, transparent),
+    0 16px 40px -12px oklch(0 0 0 / 0.22),
+    0 4px 12px -4px oklch(0 0 0 / 0.08);
   z-index: 1000;
-  animation: cui-menu-fade 140ms ease-out;
+  animation: cui-menu-fade 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: top left;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cui-text-neutral-tertiary) transparent;
+
+  &::-webkit-scrollbar
+  {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track
+  {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb
+  {
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    background-color: var(--cui-text-neutral-tertiary);
+    background-clip: padding-box;
+
+    &:hover
+    {
+      background-color: var(--cui-highlight-intense);
+    }
+  }
 
   &__item
   {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 10px;
     width: 100%;
     padding: 8px 10px;
-    border-radius: 8px;
-    font-size: 13px;
+    border-radius: 9px;
     color: var(--cui-text-neutral-primary);
-    transition: background-color 100ms ease;
+    text-align: left;
+    transition: background-color 110ms ease;
+
+    & + &
+    {
+      margin-top: 2px;
+    }
 
     &:hover
     {
-      background-color: var(--cui-highlight-strong);
+      background-color: var(--cui-highlight);
+    }
+
+    &:focus-visible
+    {
+      outline: 2px solid var(--cui-border-interactive);
+      outline-offset: -2px;
     }
 
     &--selected
     {
-      background-color: var(--cui-sunk);
+      background-color: var(--cui-highlight-strong);
       font-weight: 500;
     }
   }
@@ -75,14 +133,43 @@
   &__item-name
   {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
   }
 
-  &__item-desc
+  &__item-text
   {
-    font-size: 11px;
-    color: var(--cui-text-neutral-secondary);
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__item-provider
+  {
+    color: var(--cui-text-neutral-tertiary);
+    font-size: 10.5px;
+    font-weight: 450;
+    line-height: 13px;
+  }
+
+  &__item-label
+  {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--cui-text-neutral-primary);
+    font-size: 13px;
+    line-height: 17px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cui-model-badge__tag
+  {
+    flex-shrink: 0;
   }
 }
+
