@@ -1,0 +1,113 @@
+@use "../../Mixins" as *;
+
+.cui-agent-thread-message-user
+{
+  display: flex;
+  justify-content: flex-end;
+  padding: 0;
+
+  &__content
+  {
+    font-size: 14px;
+    line-height: 20px;
+    padding: 8px 16px 9px;
+    background-color: var(--cui-inverted-background);
+    color: var(--cui-foreground);
+    border-radius: 22px;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    max-width: 82%;
+    box-shadow: 0 1px 3px oklch(0 0 0 / 0.08);
+  }
+}
+
+.cui-agent-thread-message-assistant
+{
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  overflow: hidden;
+
+  &__avatar
+  {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: var(--cui-sunk-deep);
+    border: 1px solid var(--cui-border-default);
+    @include flex-center;
+    flex-shrink: 0;
+    color: var(--cui-text-neutral-primary);
+  }
+
+  &__content
+  {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    flex-grow: 1;
+  }
+
+  &__text
+  {
+    font-size: 15px;
+    line-height: 24px;
+    color: var(--cui-text-neutral-primary);
+    white-space: pre-wrap;
+
+    p
+    {
+      margin-bottom: 12px;
+
+      &:last-child
+      {
+        margin-bottom: 0;
+      }
+    }
+
+    ul, ol
+    {
+      margin: 8px 0 12px 20px;
+    }
+
+    li
+    {
+      margin-bottom: 4px;
+    }
+
+    code
+    {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background-color: var(--cui-sunk);
+    }
+
+    pre
+    {
+      background-color: var(--cui-sunk);
+      padding: 12px 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 10px 0;
+
+      code
+      {
+        padding: 0;
+        background: transparent;
+      }
+    }
+  }
+
+  &__footer
+  {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+}

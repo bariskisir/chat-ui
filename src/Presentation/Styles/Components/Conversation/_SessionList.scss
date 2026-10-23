@@ -1,0 +1,103 @@
+@use "../../Mixins" as *;
+
+@keyframes cui-agent-thread-list-appear
+{
+  from
+  {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to
+  {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cui-agent-thread-list
+{
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0 -6px;
+  padding: 0 6px;
+  @include scrollbar-style;
+
+  .cui-agent-container--mobile &
+  {
+    margin: 0;
+    padding: 0;
+    gap: 8px;
+  }
+
+  &--mask-top#{&}--mask-bottom
+  {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black 20px,
+      black calc(100% - 20px),
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black 20px,
+      black calc(100% - 20px),
+      transparent
+    );
+  }
+
+  &--mask-top:not(&--mask-bottom)
+  {
+    mask-image: linear-gradient(to bottom, transparent, black 20px, black);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 20px, black);
+  }
+
+  &--mask-bottom:not(&--mask-top)
+  {
+    mask-image: linear-gradient(to top, transparent, black 20px, black);
+    -webkit-mask-image: linear-gradient(to top, transparent, black 20px, black);
+  }
+}
+
+.cui-agent-thread-list-content
+{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: cui-agent-thread-list-appear 180ms ease-out both;
+
+  .cui-agent-container--mobile &
+  {
+    gap: 8px;
+  }
+}
+
+.cui-agent-thread-list-group
+{
+  display: flex;
+  padding-left: 6px;
+  padding-bottom: 6px;
+  color: var(--cui-text-neutral-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+
+  &:not(:first-child)
+  {
+    padding-top: 6px;
+  }
+
+  .cui-agent-container--mobile &
+  {
+    font-size: 13px;
+    padding-left: 6px;
+  }
+}

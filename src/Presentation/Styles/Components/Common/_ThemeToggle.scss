@@ -1,0 +1,21 @@
+.cui-agent-theme-toggle
+{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: -3px;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  color: var(--cui-text-neutral-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 90ms ease, color 90ms ease;
+
+  &:hover
+  {
+    background-color: var(--cui-highlight-strong);
+    color: var(--cui-text-neutral-primary);
+  }
+}

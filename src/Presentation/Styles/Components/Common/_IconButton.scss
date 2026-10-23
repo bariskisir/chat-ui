@@ -1,0 +1,30 @@
+@use "../../Mixins" as *;
+
+.cui-icon-button
+{
+  @include flex-center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--cui-text-neutral-secondary);
+  transition: background-color 120ms ease, color 120ms ease;
+
+  &:hover
+  {
+    background-color: var(--cui-highlight-strong);
+    color: var(--cui-text-neutral-primary);
+  }
+
+  &--active
+  {
+    background-color: var(--cui-sunk-deep);
+    color: var(--cui-text-neutral-primary);
+  }
+
+  &--small
+  {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+  }
+}

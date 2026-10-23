@@ -1,0 +1,54 @@
+@use "../../Mixins" as *;
+
+.cui-agent-container
+{
+  display: flex;
+  position: relative;
+  height: 100dvh;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  background: color-mix(in oklch, var(--cui-background) 40%, var(--cui-foreground));
+  box-sizing: border-box;
+
+  &--mobile
+  {
+    padding: 0;
+    background: var(--cui-foreground);
+    height: 100dvh;
+    width: 100%;
+  }
+}
+
+.cui-agent-thread-container
+{
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 4px 4px 4px 0;
+  border-radius: 20px;
+  outline: 1px solid var(--cui-sunk);
+  background-color: var(--cui-foreground);
+  box-shadow: 0 4px 20px -2px oklch(0 0 0 / 0.04);
+
+  .cui-agent-container--mobile &
+  {
+    margin: 0;
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+    width: 100%;
+  }
+}
+
+.cui-agent-thread-scrollable
+{
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  @include scrollbar-style;
+}

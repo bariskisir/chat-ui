@@ -1,0 +1,12 @@
+@use "../../Variables" as *;
+
+.cui-agent-thread-messages
+{
+  width: 100%;
+  max-width: $content-max-width;
+  margin: 0 auto;
+  padding: 24px $content-inline-padding 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
