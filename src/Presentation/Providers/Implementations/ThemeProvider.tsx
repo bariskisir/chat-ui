@@ -10,14 +10,19 @@ export const ThemeProvider: FC<IThemeProviderProps> = ({ children }) =>
 {
   const [theme, setThemeState] = useState<ThemeMode>(() =>
   {
+    const appliedTheme = document.documentElement.getAttribute('data-cui-theme');
+    if (appliedTheme === ThemeMode.Dark || appliedTheme === ThemeMode.Light)
+    {
+      return appliedTheme as ThemeMode;
+    }
+
     const stored = localStorage.getItem(ThemeStorageKey);
     if (stored === ThemeMode.Dark || stored === ThemeMode.Light)
     {
       return stored as ThemeMode;
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? ThemeMode.Dark
-      : ThemeMode.Light;
+
+    return ThemeMode.Dark;
   });
 
   useEffect(() =>

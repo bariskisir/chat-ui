@@ -1,37 +1,89 @@
-import { FC, useState, useMemo, useCallback } from 'react';
+import { FC, useState, useEffect, useMemo, useCallback } from 'react';
 import { IModelProviderProps } from '../Definitions/IModelProviderProps';
 import { ModelContext } from '../../Contexts/ModelContext';
-import { ModelRegistryService } from '../../../Application/Services/ModelRegistryService';
-import { ModelIdentifier } from '../../../Core/Domain/Enums/ModelIdentifier';
 import { IModelContextValue } from '../../Contracts/IModelContextValue';
+import { IModelDescriptor } from '../../../Core/Domain/Entities/Definitions/IModelDescriptor';
+import { ModelIdentifier } from '../../../Core/Domain/Enums/ModelIdentifier';
 
-const ModelStorageKey = 'cui_selected_model_v1';
+/** Picks the preferred model family when available, then the last catalog entry. */
+function SelectInitialModelId(models: IModelDescriptor[]): ModelIdentifier | null
+{
+  const findByKeyword = (keyword: string): IModelDescriptor | undefined =>
+  {
+    return models.find((model) =>
+    {
+      const searchableText = `${model.Id} ${model.Name}`.toLowerCase();
+      return searchableText.includes(keyword);
+    });
+  };
+
+  const preferredModel = findByKeyword('minimax')
+    ?? findByKeyword('deepseek-v4.1-flash')
+    ?? findByKeyword('deepseek')
+    ?? models[models.length - 1];
+
+  return preferredModel?.Id ?? null;
+}
 
 export const ModelProvider: FC<IModelProviderProps> = ({ children, repository }) =>
 {
-  const repo = useMemo(() => repository || new ModelRegistryService(), [repository]);
-  const models = useMemo(() => repo.GetAllModels(), [repo]);
+  const [models, setModels] = useState<IModelDescriptor[]>([]);
+  const [selectedModel, setSelectedModel] = useState<ModelIdentifier | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const [selectedModel, setSelectedModel] = useState<ModelIdentifier>(() =>
+  useEffect(() =>
   {
-    const stored = localStorage.getItem(ModelStorageKey) as ModelIdentifier | null;
-    if (stored && repo.GetModelById(stored))
+    let isCancelled = false;
+
+    setIsLoading(true);
+
+    repository.GetModelsAsync()
+      .then((loadedModels) =>
+      {
+        if (isCancelled)
+        {
+          return;
+        }
+
+        setModels(loadedModels);
+        setSelectedModel(SelectInitialModelId(loadedModels));
+        setErrorMessage(null);
+      })
+      .catch((loadError: unknown) =>
+      {
+        if (isCancelled)
+        {
+          return;
+        }
+
+        setModels([]);
+        setSelectedModel(null);
+        setErrorMessage(loadError instanceof Error ? loadError.message : String(loadError));
+      })
+      .finally(() =>
+      {
+        if (!isCancelled)
+        {
+          setIsLoading(false);
+        }
+      });
+
+    return () =>
     {
-      return stored;
-    }
-    return repo.GetDefaultModel().Id;
-  });
+      isCancelled = true;
+    };
+  }, [repository]);
 
   const selectModel = useCallback((id: ModelIdentifier) =>
   {
     setSelectedModel(id);
-    localStorage.setItem(ModelStorageKey, id);
   }, []);
 
   const currentDescriptor = useMemo(() =>
   {
-    return repo.GetModelById(selectedModel) || repo.GetDefaultModel();
-  }, [repo, selectedModel]);
+    return models.find((model) => model.Id === selectedModel) ?? models[0] ?? null;
+  }, [models, selectedModel]);
 
   const value = useMemo<IModelContextValue>(() =>
   {
@@ -39,9 +91,11 @@ export const ModelProvider: FC<IModelProviderProps> = ({ children, repository })
       SelectedModel: selectedModel,
       Models: models,
       CurrentDescriptor: currentDescriptor,
+      IsLoading: isLoading,
+      ErrorMessage: errorMessage,
       SelectModel: selectModel
     };
-  }, [selectedModel, models, currentDescriptor, selectModel]);
+  }, [selectedModel, models, currentDescriptor, isLoading, errorMessage, selectModel]);
 
   return (
     <ModelContext.Provider value={value}>

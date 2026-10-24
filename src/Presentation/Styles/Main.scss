@@ -5,6 +5,7 @@
 // Component styles are kept in their own partials.
 // The order below mirrors the original cascade so overrides behave the same.
 @use "./Components/Layout/AppShell";
+@use "./Components/Layout/AppLoading";
 @use "./Components/Layout/Sidebar";
 @use "./Components/Conversation/SessionList";
 @use "./Components/Conversation/SessionItem";
@@ -13,10 +14,14 @@
 @use "./Components/Layout/MobileHeader";
 @use "./Components/Layout/TopHeader";
 @use "./Components/Composer/ModelSelector";
+@use "./Components/Common/AttachmentChip";
 @use "./Components/Messages/MessageList";
 @use "./Components/Messages/MessageBubble";
+@use "./Components/Common/Markdown";
+@use "./Components/Messages/MessageBlocks";
 @use "./Components/Welcome/ChatEmptyView";
 @use "./Components/Composer/PromptComposer";
+@use "./Components/Composer/ComposerControls";
 @use "./Components/Common/IconButton";
 @use "./Components/Conversation/RenameSessionDialog";
 @use "./Components/Messages/TypingIndicator";

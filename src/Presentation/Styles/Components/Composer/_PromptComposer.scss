@@ -1,6 +1,11 @@
 @use "../../Variables" as *;
 @use "../../Mixins" as *;
 
+$composer-input-line-height: 20px;
+$composer-input-padding-block: 8px;
+$composer-input-max-lines: 10;
+$composer-input-max-height: calc(#{$composer-input-max-lines} * #{$composer-input-line-height} + #{$composer-input-padding-block});
+
 .cui-agent-welcome-composer-wrapper
 {
   width: 100%;
@@ -14,12 +19,12 @@
   border: 1px solid transparent;
   border-radius: $radius-6xl;
   box-shadow: 0 0 0 0.5px color-mix(in oklch, var(--cui-text-neutral-primary) 8%, transparent), 0 4px 16px oklch(0 0 0 / 0.06);
-  overflow: clip;
+  overflow: visible;
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 12px;
-  padding: 11px 12px 11px 20px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 11px 12px 10px 16px;
   width: 100%;
   min-height: 56px;
   transition: box-shadow 160ms ease;
@@ -31,17 +36,18 @@
 
   &__input
   {
-    padding: 6px 0;
-    flex: 1;
+    width: 100%;
+    padding: 4px 2px;
+    flex: none;
     min-width: 0;
     resize: none;
-    max-height: 200px;
+    max-height: $composer-input-max-height;
     outline: none;
     border: none;
     background: transparent;
-    overflow-y: auto;
+    overflow-y: hidden;
     font-size: 15px;
-    line-height: 20px;
+    line-height: $composer-input-line-height;
     min-height: 32px;
     color: var(--cui-text-neutral-primary);
     @include scrollbar-style;
@@ -57,13 +63,6 @@
     }
   }
 
-  &__action-bar
-  {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
   &__submit-button
   {
     @include flex-center;
@@ -73,6 +72,7 @@
     background-color: var(--cui-inverted-background);
     color: var(--cui-foreground);
     transition: opacity 120ms ease, transform 120ms ease;
+    flex-shrink: 0;
 
     &:not(:disabled):hover
     {
@@ -109,13 +109,13 @@
     border: 1px solid transparent;
     border-radius: $radius-6xl;
     box-shadow: 0 0 0 0.5px color-mix(in oklch, var(--cui-text-neutral-primary) 8%, transparent), 0 4px 16px oklch(0 0 0 / 0.06);
-    overflow: clip;
+    overflow: visible;
     display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
     min-height: 56px;
-    padding: 11px 12px 11px 20px;
+    padding: 11px 12px 10px 16px;
     transition: box-shadow 160ms ease;
 
     &:focus-within
@@ -126,17 +126,19 @@
 
   &__input
   {
-    flex: 1;
+    width: 100%;
+    flex: none;
     min-width: 0;
-    padding: 6px 0;
+    padding: 4px 2px;
     resize: none;
-    max-height: 200px;
+    max-height: $composer-input-max-height;
     outline: none;
     border: none;
     background: transparent;
-    overflow-y: auto;
+    overflow-y: hidden;
     font-size: 15px;
-    line-height: 20px;
+    line-height: $composer-input-line-height;
+    min-height: 32px;
     color: var(--cui-text-neutral-primary);
     @include scrollbar-style;
 
@@ -151,14 +153,6 @@
     }
   }
 
-  &__action-bar
-  {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-
   &__submit-button
   {
     @include flex-center;
@@ -168,6 +162,7 @@
     background-color: var(--cui-inverted-background);
     color: var(--cui-foreground);
     transition: opacity 120ms ease, transform 120ms ease;
+    flex-shrink: 0;
 
     &:not(:disabled):hover
     {
@@ -179,6 +174,152 @@
     {
       opacity: 0.35;
       cursor: not-allowed;
+    }
+  }
+}
+
+.cui-agent-composer-attachments
+{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 2px 2px 0;
+}
+
+.cui-agent-composer-file-input
+{
+  display: none;
+}
+
+.cui-agent-composer-error
+{
+  padding: 0 2px;
+  color: oklch(0.577 0.215 27.325);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.cui-agent-composer-toolbar
+{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+
+  &__tools
+  {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  &__actions
+  {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  &__model
+  {
+    min-width: 0;
+  }
+
+  .cui-model-badge
+  {
+    height: 30px;
+    max-width: 220px;
+  }
+
+  .cui-model-dropdown
+  {
+    top: auto;
+    right: 0;
+    bottom: calc(100% + 8px);
+    left: auto;
+    transform-origin: bottom right;
+  }
+}
+
+.cui-agent-container--mobile .cui-agent-composer-toolbar
+{
+  gap: 6px;
+
+  .cui-agent-composer-toolbar__actions
+  {
+    gap: 6px;
+  }
+
+  .cui-model-badge
+  {
+    max-width: 120px;
+    padding: 0 9px;
+    gap: 4px;
+    font-size: 11px;
+  }
+}
+
+.cui-agent-composer-tool
+{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 9px;
+  border-radius: $radius-full;
+  color: var(--cui-text-neutral-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 110ms ease, color 110ms ease;
+
+  &:not(:disabled):hover
+  {
+    background-color: var(--cui-highlight);
+    color: var(--cui-text-neutral-primary);
+  }
+
+  &--icon
+  {
+    width: 30px;
+    padding: 0;
+  }
+
+  &--active
+  {
+    background-color: var(--cui-sunk-deep);
+    color: var(--cui-text-neutral-primary);
+  }
+
+  &--destructive:not(:disabled):hover
+  {
+    background-color: oklch(0.577 0.215 27.325 / 0.1);
+    color: oklch(0.577 0.215 27.325 / 1);
+  }
+
+  &:disabled
+  {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .cui-agent-container--mobile &
+  {
+    width: 30px;
+    padding: 0;
+  }
+
+  &__label
+  {
+    .cui-agent-container--mobile &
+    {
+      display: none;
     }
   }
 }

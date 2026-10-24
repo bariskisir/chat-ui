@@ -82,6 +82,10 @@
 .cui-agent-thread-list-group
 {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 22px;
   padding-left: 6px;
   padding-bottom: 6px;
   color: var(--cui-text-neutral-secondary);
@@ -99,5 +103,22 @@
   {
     font-size: 13px;
     padding-left: 6px;
+  }
+}
+
+.cui-agent-thread-list-clear.cui-icon-button
+{
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin: -4px -2px -4px 0;
+  border-radius: 6px;
+  color: var(--cui-text-neutral-secondary);
+  transition: background-color 110ms ease, color 110ms ease;
+
+  &:hover
+  {
+    background-color: oklch(0.577 0.215 27.325 / 0.1);
+    color: oklch(0.577 0.215 27.325 / 1);
   }
 }

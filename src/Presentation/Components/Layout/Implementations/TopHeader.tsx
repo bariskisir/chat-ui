@@ -3,7 +3,6 @@ import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { ITopHeaderProps } from '../Definitions/ITopHeaderProps';
 import { UseChat } from '../../../Hooks/UseChat';
 import { IconButton } from '../../Common/Implementations/IconButton';
-import { ModelSelector } from '../../Composer/Implementations/ModelSelector';
 import { RenameSessionDialog } from '../../Conversation/Implementations/RenameSessionDialog';
 
 export const TopHeader: FC<ITopHeaderProps> = () =>
@@ -67,18 +66,6 @@ export const TopHeader: FC<ITopHeaderProps> = () =>
   return (
     <>
       <header className="cui-agent-thread-header">
-        <div className="cui-agent-thread-header__start">
-          <ModelSelector />
-        </div>
-
-        <div className="cui-agent-thread-header__center">
-          {ActiveSession && (
-            <div className="cui-agent-thread-header__title" title={ActiveSession.Title}>
-              <span className="cui-agent-thread-header__title-text">{ActiveSession.Title}</span>
-            </div>
-          )}
-        </div>
-
         <div className="cui-agent-thread-header__end">
           {ActiveSession && (
             <div style={{ position: 'relative' }}>

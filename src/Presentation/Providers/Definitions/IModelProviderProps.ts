@@ -4,5 +4,5 @@ import { IModelRepository } from '../../../Application/Contracts/IModelRepositor
 export interface IModelProviderProps
 {
   children: ReactNode;
-  repository?: IModelRepository;
+  repository: IModelRepository;
 }

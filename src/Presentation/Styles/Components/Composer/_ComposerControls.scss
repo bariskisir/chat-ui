@@ -1,0 +1,111 @@
+@use "../../Mixins" as *;
+
+.cui-composer-popover
+{
+  position: fixed;
+  z-index: 120;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 7px;
+  background-color: var(--cui-popover-background);
+  border: 1px solid var(--cui-border-default);
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--cui-text-neutral-primary) 6%, transparent),
+    0 22px 48px -12px oklch(0 0 0 / 0.38);
+  animation: cui-menu-fade 130ms ease;
+  @include scrollbar-style;
+
+  &__title
+  {
+    padding: 4px 8px 8px;
+    color: var(--cui-text-neutral-secondary);
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  &__choices
+  {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+.cui-composer-choice
+{
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--cui-text-neutral-secondary);
+  text-align: left;
+  transition: background-color 110ms ease, border-color 110ms ease, color 110ms ease;
+
+  &:hover
+  {
+    background-color: var(--cui-highlight);
+    color: var(--cui-text-neutral-primary);
+  }
+
+  &:focus-visible
+  {
+    outline: 2px solid var(--cui-border-interactive);
+    outline-offset: -2px;
+  }
+
+  &--selected
+  {
+    background-color: var(--cui-highlight-strong);
+    border-color: var(--cui-border-default);
+    color: var(--cui-text-neutral-primary);
+  }
+
+  &__icon
+  {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    border-radius: 8px;
+    background-color: var(--cui-sunk);
+    color: var(--cui-text-neutral-primary);
+  }
+
+  &__text
+  {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+
+    strong
+    {
+      color: var(--cui-text-neutral-primary);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 15px;
+    }
+
+    small
+    {
+      color: var(--cui-text-neutral-secondary);
+      font-size: 10.5px;
+      line-height: 14px;
+    }
+  }
+
+  &__check
+  {
+    flex: 0 0 auto;
+    color: var(--cui-text-neutral-primary);
+  }
+}
