@@ -3,8 +3,6 @@
 import { IChatCitation } from '../../Core/Domain/Entities/Definitions/IChatCitation';
 import { ReasoningEffort } from '../../Core/Domain/Enums/ReasoningEffort';
 import { WebSearchEngine, WebSearchMode } from '../../Core/Domain/Enums/WebSearchMode';
-import { SearchWebAsync } from '../WebSearch/WebSearchService';
-import { BuildReferencePrompt } from '../WebSearch/WebSearchPrompt';
 import { StreamOpenAIChatAsync } from './OpenAIClient';
 import { IOpenAIMessage } from './OpenAIProtocol';
 
@@ -106,6 +104,11 @@ async function RunJobAsync(
 
       try
       {
+        const [{ SearchWebAsync }, { BuildReferencePrompt }] = await Promise.all([
+          import('../WebSearch/WebSearchService'),
+          import('../WebSearch/WebSearchPrompt')
+        ]);
+
         const searchResult = await SearchWebAsync(
           engine,
           [request.Prompt],

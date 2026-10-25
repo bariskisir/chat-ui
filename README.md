@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://chat-ui-alpha-eight.vercel.app"><strong>chat-ui-alpha-eight.vercel.app</strong></a>
+  <a href="https://chatui.bariskisir.com"><strong>chatui.bariskisir.com</strong></a>
 </p>
 
 <p align="center">

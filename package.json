@@ -2,6 +2,7 @@
   "name": "chat-ui",
   "private": true,
   "version": "1.0.0",
+  "homepage": "https://chatui.bariskisir.com",
   "type": "module",
   "scripts": {
     "dev": "next dev -p 3000",
@@ -12,21 +13,24 @@
     "@mozilla/readability": "^0.6.0",
     "clsx": "^2.1.1",
     "jsdom": "26.1.0",
-    "lucide-react": "^0.460.0",
-    "next": "15.5.28",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "lucide-react": "^1.61.0",
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
     "turndown": "^7.2.4"
   },
   "devDependencies": {
     "@types/jsdom": "^30.0.0",
-    "@types/node": "^24.0.0",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "@types/turndown": "^5.0.5",
-    "sass": "^1.81.0",
-    "typescript": "^5.6.3"
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/turndown": "^5.0.6",
+    "sass": "^1.106.1",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

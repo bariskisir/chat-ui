@@ -32,6 +32,7 @@ const ThemeBootstrapScript = `
 
 export const metadata: Metadata =
 {
+  metadataBase: new URL('https://chatui.bariskisir.com'),
   title: 'Chat UI',
   description: 'A focused chat interface for Mock and OpenAI-compatible models.',
   icons:

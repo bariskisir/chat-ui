@@ -5,7 +5,7 @@ import clsx from 'clsx';
 interface IComposerPopoverProps
 {
   isOpen: boolean;
-  anchorRef: RefObject<HTMLElement>;
+  anchorRef: RefObject<HTMLElement | null>;
   onClose: () => void;
   className?: string;
   children: ReactNode;

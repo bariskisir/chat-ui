@@ -18,7 +18,7 @@ import { IsWebSearchEnabled } from '../../../../src/Server/Configuration/WebSear
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const maxDuration = 120;
+export const maxDuration = 60;
 
 const MaxPromptChars = 32_000;
 const MaxHistoryMessages = 100;
