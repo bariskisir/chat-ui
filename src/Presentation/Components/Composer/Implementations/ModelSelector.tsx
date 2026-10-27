@@ -42,12 +42,21 @@ function MatchesSearch(model: IModelDescriptor, query: string): boolean
   return haystack.includes(query);
 }
 
-export const ModelSelector: FC<IModelSelectorProps> = ({ className }) =>
+export const ModelSelector: FC<IModelSelectorProps> = ({
+  className,
+  placement: preferredPlacement,
+  isCentered = false
+}) =>
 {
   const { SelectedModel, Models, CurrentDescriptor, IsLoading, ErrorMessage, SelectModel } = UseModel();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [favoriteModelIds, setFavoriteModelIds] = useState<ModelIdentifier[]>(ReadFavoriteModelIds);
+  const [actualPlacement, setActualPlacement] = useState<'top' | 'bottom'>(() =>
+  {
+    return preferredPlacement === 'bottom' ? 'bottom' : 'top';
+  });
+  const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const selectedItemRef = useRef<HTMLButtonElement>(null);
@@ -103,6 +112,49 @@ export const ModelSelector: FC<IModelSelectorProps> = ({ className }) =>
       return;
     }
 
+    const updatePosition = () =>
+    {
+      const container = containerRef.current;
+      if (!container)
+      {
+        return;
+      }
+
+      const rect = container.getBoundingClientRect();
+      const scrollable = container.closest('.cui-agent-thread-scrollable') as HTMLElement | null;
+      const topBoundary = scrollable
+        ? Math.max(12, scrollable.getBoundingClientRect().top + 8)
+        : 12;
+
+      const spaceAbove = Math.max(120, rect.top - 8 - topBoundary);
+      const targetPlacement = preferredPlacement === 'bottom' ? 'bottom' : 'top';
+      const spaceBelow = Math.max(120, window.innerHeight - rect.bottom - 16);
+      const desiredMaxHeight = 420;
+      const availableSpace = targetPlacement === 'bottom' ? spaceBelow : spaceAbove;
+      const computedMaxHeight = Math.max(120, Math.min(desiredMaxHeight, availableSpace));
+
+      setActualPlacement(targetPlacement);
+      setMaxHeight(computedMaxHeight);
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+
+    return () =>
+    {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [isOpen, preferredPlacement, isCentered]);
+
+  useLayoutEffect(() =>
+  {
+    if (!isOpen)
+    {
+      return;
+    }
+
     const list = listRef.current;
     const selectedItem = selectedItemRef.current;
     if (!list || !selectedItem)
@@ -114,7 +166,7 @@ export const ModelSelector: FC<IModelSelectorProps> = ({ className }) =>
       - (list.clientHeight - selectedItem.offsetHeight) / 2;
 
     list.scrollTop = Math.max(0, targetScrollTop);
-  }, [isOpen, Models.length]);
+  }, [isOpen, Models.length, maxHeight]);
 
   const handleToggleDropdown = () =>
   {
@@ -219,7 +271,16 @@ export const ModelSelector: FC<IModelSelectorProps> = ({ className }) =>
       </button>
 
       {isOpen && Models.length > 0 && (
-        <div className="cui-model-dropdown" role="listbox">
+        <div
+          className={clsx(
+            'cui-model-dropdown',
+            `cui-model-dropdown--${actualPlacement}`
+          )}
+          role="listbox"
+          style={{
+            maxHeight: maxHeight !== undefined ? `${maxHeight}px` : undefined
+          }}
+        >
           <div className="cui-model-dropdown__search">
             <Search size={14} strokeWidth={2} aria-hidden="true" />
             <input

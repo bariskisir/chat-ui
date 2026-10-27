@@ -239,10 +239,24 @@ $composer-input-max-height: calc(#{$composer-input-max-lines} * #{$composer-inpu
   .cui-model-dropdown
   {
     top: auto;
-    right: 0;
     bottom: calc(100% + 8px);
+    right: 0;
     left: auto;
     transform-origin: bottom right;
+
+    &--top
+    {
+      top: auto;
+      bottom: calc(100% + 8px);
+      transform-origin: bottom right;
+    }
+
+    &--bottom
+    {
+      top: calc(100% + 8px);
+      bottom: auto;
+      transform-origin: top right;
+    }
   }
 }
 

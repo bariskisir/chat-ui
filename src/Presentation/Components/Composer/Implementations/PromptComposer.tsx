@@ -321,7 +321,11 @@ export const PromptComposer: FC<IPromptComposerProps> = ({
           </div>
 
           <div className="cui-agent-composer-toolbar__actions">
-            <ModelSelector className="cui-agent-composer-toolbar__model" />
+            <ModelSelector
+              className="cui-agent-composer-toolbar__model"
+              placement="top"
+              isCentered={isCentered}
+            />
 
             <button
               type="button"
